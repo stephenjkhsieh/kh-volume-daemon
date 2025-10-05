@@ -1,3 +1,5 @@
+# 此設定檔用要放在 ~/.config/kh-volume/config.yaml
+# 若沒有此檔案，程式會使用內建的預設值
 settings:
   # 虛擬輸出裝置名稱
   sink_name: kh150_sink

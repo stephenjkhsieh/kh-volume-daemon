@@ -289,7 +289,8 @@ if __name__ == "__main__":
     }
 
     # 2. 讀取設定檔
-    config_path = Path(__file__).parent / "config.yaml"
+    # config_path = Path(__file__).parent / "config.yaml"
+    config_path = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config")) / "kh-volume/config.yaml"
     file_config = load_config_from_file(config_path)
 
     # 3. 解析命令列參數
