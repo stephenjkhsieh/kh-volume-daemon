@@ -32,7 +32,9 @@ class VolumeDaemon:
         logging.debug(f"Running command: {' '.join(cmd)}")
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, check=True, **kwargs)
-            return result.stdout.strip()
+            output = result.stdout.strip()
+            logging.debug(f"Command output: \n{output}")
+            return output
         except FileNotFoundError:
             logging.error(f"Command not found: {cmd[0]}")
             sys.exit(1)
@@ -279,7 +281,7 @@ if __name__ == "__main__":
         "sink_desc": "KH150\ Control",
         "enable_redirect": False,
         "real_sink_name": "",
-        "khtool_repo": "~/Codespace/khtool",
+        "khtool_repo": "~/Codespace/khtool/khtool.py",
         "khtool_workdir": "~/.local/state/kh-volume",
         "iface": "lo",
         "db_min": 40,
