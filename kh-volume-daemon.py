@@ -57,8 +57,9 @@ class VolumeDaemon:
             if 'media.class = "Audio/Sink"' in body and pactl_name in body:
                 id_match = re.search(r'id (\d+)', header)
                 name_match = re.search(r'node.name = "([^"]+)"', body)
+                serial_match = re.search(r'object.serial = "([^"]+)"', body)
                 if id_match and name_match:
-                    return {"id": id_match.group(1), "name": name_match.group(1)}
+                    return {"id": id_match.group(1), "name": name_match.group(1), "serial": serial_match.group(1)}
         return None
 
     def _get_node_info_from_sink_input_block(self, block_content: str) -> Optional[Dict[str, str]]:
@@ -67,16 +68,6 @@ class VolumeDaemon:
         name_match = re.search(r'node.name = "([^"]+)"', block_content)
         if id_match and name_match:
             return {"id": id_match.group(1), "name": name_match.group(1)}
-        return None
-
-    def _get_sink_index(self) -> Optional[str]:
-        """取得 sink 的數字 index"""
-        output = self._run_command(["pactl", "list", "short", "sinks"])
-        if output is None: return None
-        for line in output.splitlines():
-            parts = line.split()
-            if len(parts) > 1 and parts[1] == self.sink_name:
-                return parts[0]
         return None
 
     def _get_vol_pct(self) -> Optional[int]:
@@ -193,7 +184,7 @@ class VolumeDaemon:
             logging.info(f"Real sink: '{self.real_sink_node_info['name']}' (ID: {self.real_sink_node_info['id']})")
 
         # ---- 設定虛擬 sink 初始狀態 & 初始同步 ----
-        self.sink_index = self._get_sink_index()
+        self.sink_index = self.sink_node_info['serial']
         if not self.sink_index:
             logging.error("Could not get sink index after creation."); sys.exit(1)
         self._run_command(["pactl", "set-sink-volume", self.sink_index, f"{self.config['init_vol_pct']}%"])
